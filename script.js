@@ -2302,17 +2302,18 @@ if (IS_HEADER) {
 	}, 0);
 }
 
-  const audioElement = document.getElementById('background-audio');
-  let isPlaying = false;
+const music = document.getElementById('background-music');
+const soundButton = document.querySelector('.sound-btn svg use');
 
-  function toggleMusic() {
-    if (isPlaying) {
-      audioElement.pause();
-    } else {
-      audioElement.play();
-    }
-    isPlaying = !isPlaying;
+function toggleMusic() {
+  if (music.paused) {
+    music.play();
+    soundButton.setAttribute('href', '#icon-sound-on');
+  } else {
+    music.pause();
+    soundButton.setAttribute('href', '#icon-sound-off');
   }
+}
 
 
 
