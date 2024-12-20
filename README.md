@@ -17,7 +17,7 @@
   <h2>📂 Project Setup</h2>
   <ol>
     <li>Clone the repository to your local machine:
-      <pre><code>[git clone https://github.com/Phamlong7/FireWork.git</code></pre>
+      <pre><code> git clone https://github.com/Phamlong7/FireWork.git</code></pre>
     </li>
     <li>Navigate to the project directory:
       <pre><code>cd Firework</code></pre>
