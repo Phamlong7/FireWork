@@ -2302,17 +2302,22 @@ if (IS_HEADER) {
 	}, 0);
 }
 
-const audioElement = document.getElementById('background-audio');
-let isPlaying = false;
+document.addEventListener('DOMContentLoaded', () => {
+  const audioElement = document.getElementById('background-audio');
+  let isPlaying = false;
 
-function toggleMusic() {
-  if (isPlaying) {
-	audioElement.pause();
-  } else {
-	audioElement.play();
+  function toggleMusic() {
+    if (isPlaying) {
+      audioElement.pause();
+    } else {
+      audioElement.play();
+    }
+    isPlaying = !isPlaying;
   }
-  isPlaying = !isPlaying;
-}
+
+  // Add event listener for the button or element that toggles music
+  document.querySelector('.sound-btn').addEventListener('click', toggleMusic);
+});
 
 
 

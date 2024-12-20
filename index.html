@@ -20,10 +20,7 @@
 <!-- partial:index.partial.html -->
 <!-- SVG Spritesheet -->
   <!-- Phát âm thanh từ MP4 ngay khi trang load -->
-  <video id="background-audio" loop>
-    <source src="./music/newyear.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <audio id="background-audio" src="music/newyear.mp4" loop></audio>
 <div style="height: 0; width: 0; position: absolute; visibility: hidden;">
 	<svg xmlns="http://www.w3.org/2000/svg">
 		<symbol id="icon-play" viewBox="0 0 24 24">
@@ -63,7 +60,7 @@
             <use href="#icon-pause" xlink:href="#icon-pause"></use>
           </svg>
         </div>
-        <div class="btn sound-btn" onclick="toggleMusic()">
+        <div class="btn sound-btn">
           <svg fill="white" width="24" height="24">
             <use href="#icon-sound-on" xlink:href="#icon-sound-on"></use>
           </svg>
