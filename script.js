@@ -2302,17 +2302,16 @@ if (IS_HEADER) {
 	}, 0);
 }
 
-const music = document.getElementById('background-music');
-const soundButton = document.querySelector('.sound-btn svg use');
+const audioElement = document.getElementById('background-audio');
+let isPlaying = false;
 
 function toggleMusic() {
-  if (music.paused) {
-    music.play();
-    soundButton.setAttribute('href', '#icon-sound-on');
+  if (isPlaying) {
+	audioElement.pause();
   } else {
-    music.pause();
-    soundButton.setAttribute('href', '#icon-sound-off');
+	audioElement.play();
   }
+  isPlaying = !isPlaying;
 }
 
 
