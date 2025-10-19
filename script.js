@@ -120,6 +120,10 @@ const store = {
 		menuOpen: false,
 		openHelpTopic: null,
 		fullscreen: isFullscreen(),
+		// Audio volume (0-1)
+		soundVolume: 0.3,
+		// Current preset: 'default', 'fast', 'slow', 'epic'
+		launchPreset: 'default',
 		// Note that config values used for <select>s must be strings, unless manually converting values to strings
 		// at render time, and parsing on change.
 		config: {
@@ -174,6 +178,14 @@ const store = {
 					config.skyLighting = data.skyLighting;
 					config.scaleFactor = data.scaleFactor;
 					break;
+				case '1.3':
+					config.quality = data.quality;
+					config.size = data.size;
+					config.skyLighting = data.skyLighting;
+					config.scaleFactor = data.scaleFactor;
+					this.state.soundVolume = data.soundVolume;
+					this.state.launchPreset = data.launchPreset;
+					break;
 				default:
 					throw new Error('version switch should be exhaustive');
 			}
@@ -203,12 +215,14 @@ const store = {
 	persist() {
 		const config = this.state.config;
 		localStorage.setItem('cm_fireworks_data', JSON.stringify({
-			schemaVersion: '1.2',
+			schemaVersion: '1.3',
 			data: {
 				quality: config.quality,
 				size: config.size,
 				skyLighting: config.skyLighting,
-				scaleFactor: config.scaleFactor
+				scaleFactor: config.scaleFactor,
+				soundVolume: this.state.soundVolume,
+				launchPreset: this.state.launchPreset
 			}
 		}));
 	}
@@ -339,6 +353,14 @@ const helpContent = {
 	longExposure: {
 		header: 'Mở màn trập',
 		body: 'Hiệu ứng thử nghiệm bảo toàn các vệt sáng dài, tương tự như để cửa trập máy ảnh mở.'
+	},
+	soundVolume: {
+		header: '🔊 Âm Lượng',
+		body: 'Điều chỉnh âm lượng của âm thanh nền (nhạc). Hiệu ứng pháo hoa có âm lượng riêng được quản lý bởi cài đặt "Tắt âm".'
+	},
+	launchPreset: {
+		header: '⚡ Chế Độ Bắn',
+		body: 'Thay đổi tốc độ bắn pháo hoa: Bình Thường (mặc định), Nhanh (500ms delay), Chậm (2s delay), Hùng Vĩ (combo + 800ms).'
 	}
 };
 
@@ -348,6 +370,8 @@ const nodeKeyToHelpKey = {
 	qualityLabel: 'quality',
 	skyLightingLabel: 'skyLighting',
 	scaleFactorLabel: 'scaleFactor',
+	soundVolumeLabel: 'soundVolume',
+	launchPresetLabel: 'launchPreset',
 	autoLaunchLabel: 'autoLaunch',
 	finaleModeLabel: 'finaleMode',
 	hideControlsLabel: 'hideControls',
@@ -377,6 +401,11 @@ const appNodes = {
 	skyLightingLabel: '.sky-lighting-label',
 	scaleFactor: '.scaleFactor',
 	scaleFactorLabel: '.scaleFactor-label',
+	soundVolume: '.sound-volume',
+	soundVolumeLabel: '.sound-volume-label',
+	soundVolumeValue: '.sound-volume-value',
+	launchPreset: '.launch-preset',
+	launchPresetLabel: '.launch-preset-label',
 	autoLaunch: '.auto-launch',
 	autoLaunchLabel: '.auto-launch-label',
 	finaleModeFormOption: '.form-option--finale-mode',
@@ -432,6 +461,14 @@ function renderApp(state) {
 	appNodes.longExposure.checked = state.config.longExposure;
 	appNodes.scaleFactor.value = state.config.scaleFactor.toFixed(2);
 	
+	// Update sound volume slider
+	const volumePercent = Math.round(state.soundVolume * 100);
+	appNodes.soundVolume.value = volumePercent;
+	appNodes.soundVolumeValue.textContent = volumePercent + '%';
+	
+	// Update launch preset
+	appNodes.launchPreset.value = state.launchPreset;
+	
 	appNodes.menuInnerWrap.style.opacity = state.openHelpTopic ? 0.12 : 1;
 	appNodes.helpModal.classList.toggle('active', !!state.openHelpTopic);
 	if (state.openHelpTopic) {
@@ -448,12 +485,13 @@ function updateBackgroundMusic() {
 	const audioElement = document.getElementById('background-audio');
 	const soundEnabled = store.state.soundEnabled;
 	const isPaused = store.state.paused;
+	const volume = store.state.soundVolume;
 	
 	if (!audioElement) return;
 	
 	if (soundEnabled && !isPaused) {
 		// Only play if sound is enabled AND not paused
-		audioElement.volume = 0.3; // Set lower volume for background music
+		audioElement.volume = volume;
 		if (audioElement.paused) {
 			audioElement.play().catch(err => {
 				// Autoplay might be blocked
@@ -475,7 +513,7 @@ function initBackgroundAudio() {
 	
 	audioElement.addEventListener('canplay', () => {
 		if (store.state.soundEnabled && !store.state.paused) {
-			audioElement.volume = 0.3;
+			audioElement.volume = store.state.soundVolume;
 			audioElement.play().catch(err => {
 				console.log('Background music play blocked:', err);
 			});
@@ -483,7 +521,7 @@ function initBackgroundAudio() {
 	});
 	
 	// Set initial volume
-	audioElement.volume = 0.3;
+	audioElement.volume = store.state.soundVolume;
 }
 
 // Perform side effects on state changes
@@ -537,6 +575,18 @@ appNodes.fullscreen.addEventListener('click', () => setTimeout(toggleFullscreen,
 appNodes.scaleFactor.addEventListener('input', () => {
 	updateConfig();
 	handleResize();
+});
+
+// Sound volume slider
+appNodes.soundVolume.addEventListener('input', (e) => {
+	const volumeValue = parseInt(e.target.value, 10) / 100;
+	store.setState({ soundVolume: volumeValue });
+	updateBackgroundMusic();
+});
+
+// Launch preset selector
+appNodes.launchPreset.addEventListener('input', (e) => {
+	store.setState({ launchPreset: e.target.value });
 });
 
 Object.keys(nodeKeyToHelpKey).forEach(nodeKey => {
@@ -801,6 +851,116 @@ const horsetailShell = (size=1) => {
 	};
 };
 
+// 🐉 Dragon Shell - Long horizontal burst with trailing effect
+const dragonShell = (size=1) => {
+	const color = randomColor({ limitWhite: true });
+	return {
+		shellSize: size,
+		spreadSize: 250 + size * 120,
+		starLife: 1200 + size * 200,
+		starDensity: 1.3,
+		color,
+		glitter: 'heavy',
+		glitterColor: COLOR.Gold,
+		pistil: Math.random() < 0.4,
+		pistilColor: makePistilColor(color),
+		streamers: true
+	};
+};
+
+// 🌈 Rainbow Shell - Multiple color bursts in sequence
+const rainbowShell = (size=1) => {
+	return {
+		shellSize: size,
+		spreadSize: 280 + size * 100,
+		starLife: 800 + size * 150,
+		starDensity: 1.0,
+		color: [randomColor(), randomColor({ notSame: true })],
+		glitter: 'light',
+		glitterColor: COLOR.White,
+		pistil: Math.random() < 0.3,
+		pistilColor: COLOR.Gold
+	};
+};
+
+// 🥥 Coconut Shell - Dense cluster of small bursts
+const coconutShell = (size=1) => {
+	const color = randomColor();
+	return {
+		shellSize: size,
+		spreadSize: 200 + size * 60,
+		starLife: 1000 + size * 150,
+		starDensity: 1.8,
+		color,
+		glitter: 'medium',
+		glitterColor: COLOR.Gold,
+		pistil: false,
+		crossette: Math.random() < 0.3
+	};
+};
+
+// ✨ Kamuro Shell (Golden willows) - Like willow but always golden
+const kamurorShell = (size=1) => ({
+	shellSize: size,
+	spreadSize: 320 + size * 110,
+	starDensity: 0.7,
+	starLife: 2800 + size * 400,
+	glitter: 'willow',
+	glitterColor: COLOR.Gold,
+	color: COLOR.Gold,
+	pistil: Math.random() < 0.2,
+	pistilColor: COLOR.White
+});
+
+// 🔥 Lava Shell - Red/Orange burst with heavy glitter
+const lavaShell = (size=1) => {
+	const colors = [COLOR.Red, COLOR.Gold];
+	const color = colors[Math.floor(Math.random() * colors.length)];
+	return {
+		shellSize: size,
+		spreadSize: 300 + size * 95,
+		starLife: 1100 + size * 180,
+		starDensity: 1.4,
+		color,
+		glitter: 'heavy',
+		glitterColor: COLOR.Gold,
+		pistil: Math.random() < 0.5,
+		pistilColor: makePistilColor(color)
+	};
+};
+
+// 💫 Nova Shell - Bright white center with expanding rings
+const novaShell = (size=1) => {
+	return {
+		shellSize: size,
+		spreadSize: 290 + size * 105,
+		starLife: 900 + size * 200,
+		starDensity: 1.2,
+		color: COLOR.White,
+		glitter: 'heavy',
+		glitterColor: COLOR.White,
+		pistil: true,
+		pistilColor: randomColor({ limitWhite: true }),
+		streamers: Math.random() < 0.4
+	};
+};
+
+// 🌺 Hibiscus Shell - Dense colorful burst
+const hibiscusShell = (size=1) => {
+	return {
+		shellSize: size,
+		spreadSize: 310 + size * 115,
+		starLife: 950 + size * 190,
+		starDensity: 1.6,
+		color: randomColor(),
+		glitter: 'light',
+		glitterColor: COLOR.White,
+		pistil: Math.random() < 0.6,
+		pistilColor: COLOR.Gold,
+		streamers: true
+	};
+};
+
 function randomShellName() {
 	return Math.random() < 0.5 ? 'Crysanthemum' : shellNames[(Math.random() * (shellNames.length - 1) + 1) | 0 ];
 }
@@ -819,7 +979,7 @@ function shellFromConfig(size) {
 // Get a random shell, not including processing intensive varients
 // Note this is only random when "Random" shell is selected in config.
 // Also, this does not create the shell, only returns the factory function.
-const fastShellBlacklist = ['Falling Leaves', 'Floral', 'Willow'];
+const fastShellBlacklist = ['Falling Leaves', 'Floral', 'Willow', 'Kamuro'];
 function randomFastShell() {
 	const isRandom = shellNameSelector() === 'Random';
 	let shellName = isRandom ? randomShellName() : shellNameSelector();
@@ -844,7 +1004,14 @@ const shellTypes = {
 	'Palm': palmShell,
 	'Ring': ringShell,
 	'Strobe': strobeShell,
-	'Willow': willowShell
+	'Willow': willowShell,
+	'Dragon': dragonShell,
+	'Rainbow': rainbowShell,
+	'Coconut': coconutShell,
+	'Kamuro': kamurorShell,
+	'Lava': lavaShell,
+	'Nova': novaShell,
+	'Hibiscus': hibiscusShell
 };
 
 const shellNames = Object.keys(shellTypes);
@@ -950,6 +1117,22 @@ function launchShellFromConfig(event) {
 // Sequences
 // -----------
 
+// Get delay based on preset mode
+function getPresetDelay() {
+	const preset = store.state.launchPreset;
+	switch(preset) {
+		case 'fast':
+			return { baseDelay: 500, multiplier: 0.5 };
+		case 'slow':
+			return { baseDelay: 2000, multiplier: 1.5 };
+		case 'epic':
+			return { baseDelay: 800, multiplier: 1.2 };
+		case 'default':
+		default:
+			return { baseDelay: 900, multiplier: 1.0 };
+	}
+}
+
 function seqRandomShell() {
 	const size = getRandomShellSize();
 	const shell = new Shell(shellFromConfig(size.size));
@@ -960,7 +1143,8 @@ function seqRandomShell() {
 		extraDelay = 4600;
 	}
 	
-	return 900 + Math.random() * 600 + extraDelay;
+	const preset = getPresetDelay();
+	return (preset.baseDelay + Math.random() * 600 * preset.multiplier + extraDelay);
 }
 
 function seqRandomFastShell() {

@@ -161,8 +161,173 @@
 
 ## 🔮 Gợi Ý Nâng Cấp Tương Lai
 
-1. Thêm slider để điều chỉnh volume âm thanh
-2. Thêm présets (Fast, Slow, Epic mode)
+1. ~~Thêm slider để điều chỉnh volume âm thanh~~ ✅ DONE
+2. ~~Thêm présets (Fast, Slow, Epic mode)~~ ✅ DONE
 3. Thêm color theme selector (Dark, Light, Neon)
 4. Thêm keyboard shortcuts display
-5. Lưu user preferences vào localStorage (âm lượng, theme)
+5. ~~Lưu user preferences vào localStorage (âm lượng, theme)~~ ✅ DONE
+
+---
+
+## 🎆 CẬP NHẬT MỚI - Thêm Loại Pháo Hoa & Tính Năng Tinh Chỉnh
+
+### 1. ✨ Thêm 8 Loại Pháo Hoa Mới
+
+#### Dragon Shell 🐉
+- Vụ nổ nằm ngang dài với hiệu ứng trailing
+- Pistil vàng
+- Starlife dài: 1200-1600ms
+
+#### Rainbow Shell 🌈
+- Vụ nổ đa màu sắc
+- Kết hợp 2 màu ngẫu nhiên
+- Hiệu ứng giống Crysanthemum nhưng với màu sắc phong phú
+
+#### Coconut Shell 🥥
+- Cụm pháo dày đặc nhỏ lẻ
+- Có khả năng kích hoạt Crossette
+- Starlife: 1000-1150ms
+
+#### Kamuro Shell ✨
+- Giống Willow nhưng luôn có màu vàng (Golden Willow)
+- Glitter willow = sparks rơi như những chiếc lá
+- Starlife lâu: 2800-3200ms
+
+#### Lava Shell 🔥
+- Vụ nổ Đỏ/Vàng mô phỏng dung nham
+- Glitter nặng
+- Pistil ngẫu nhiên
+
+#### Nova Shell 💫
+- Trắng sáng ở tâm
+- Pistil màu ngẫu nhiên
+- Có streamers
+
+#### Hibiscus Shell 🌺
+- Vụ nổ dày đặc & sáng sủa
+- Luôn có pistil vàng
+- Streamers luôn bật
+
+### 2. 🔊 Thêm Slider Âm Lượng
+
+**Tính Năng:**
+- Range slider 0-100%
+- Hiển thị giá trị % hiện tại
+- Lưu preference vào localStorage
+- Áp dụng cho nhạc nền (background audio)
+- Hiệu ứng pháo có volume riêng (không bị ảnh hưởng)
+
+**CSS Styling:**
+- Custom thumb với gradient cyan
+- Glow effect trên hover
+- Background gradient
+
+### 3. ⚡ Thêm Presets Bắn Pháo (Launch Presets)
+
+**4 Modes:**
+
+| Mode | Delay | Multiplier | Mô Tả |
+|------|-------|-----------|-------|
+| **Bình Thường** | 900ms | 1.0x | Mặc định, cân bằng |
+| **Nhanh** | 500ms | 0.5x | Bắn liên tục, hiệu ứng rực rỡ |
+| **Chậm** | 2000ms | 1.5x | Bắn từ từ, thưởng thức từng vụ |
+| **Hùng Vĩ** | 800ms | 1.2x | Combo mode, dõi theo sequence |
+
+**Cách Hoạt Động:**
+- `getPresetDelay()` function trả về baseDelay và multiplier
+- `seqRandomShell()` sử dụng: `baseDelay + random * 600 * multiplier + extraDelay`
+- Lưu vào localStorage tự động
+
+### 4. 💾 Cải Thiện localStorage
+
+**Dữ Liệu Được Lưu:**
+- soundVolume (0-1)
+- launchPreset ('default', 'fast', 'slow', 'epic')
+
+**Schema Version:** 1.3
+- Backward compatible với 1.1 và 1.2
+
+### 5. 📊 Cập Nhật State Management
+
+**Thêm vào store.state:**
+```javascript
+soundVolume: 0.3,        // float 0-1
+launchPreset: 'default'  // string
+```
+
+**Event Listeners Mới:**
+```javascript
+// Volume slider
+appNodes.soundVolume.addEventListener('input', (e) => {
+  const volumeValue = parseInt(e.target.value, 10) / 100;
+  store.setState({ soundVolume: volumeValue });
+  updateBackgroundMusic();
+});
+
+// Preset selector
+appNodes.launchPreset.addEventListener('input', (e) => {
+  store.setState({ launchPreset: e.target.value });
+});
+```
+
+## 📝 Files Được Cập Nhật (Update 2)
+
+1. **script.js**:
+   - Thêm 8 shell types mới (Dragon, Rainbow, Coconut, Kamuro, Lava, Nova, Hibiscus)
+   - Cập nhật `shellTypes` object
+   - Cập nhật `fastShellBlacklist` (thêm Kamuro)
+   - Thêm `getPresetDelay()` function
+   - Cập nhật `seqRandomShell()` dùng preset delay
+   - Thêm `soundVolume` và `launchPreset` vào state
+   - Cập nhật localStorage persist/load (v1.3)
+   - Thêm event listeners cho volume & preset
+   - Cập nhật `renderApp()` để sync UI
+   - Thêm help content cho tính năng mới
+   - Cập nhật `updateBackgroundMusic()` dùng soundVolume
+
+2. **index.html**:
+   - Thêm volume range slider
+   - Thêm preset select dropdown
+   - Help text cho tính năng mới
+
+3. **style.css**:
+   - `.form-option--range` styling
+   - Custom range input thumb
+   - `.form-option-value` display class
+
+## 🎯 Cách Sử Dụng Tính Năng Mới
+
+### Volume Slider
+1. Mở Settings (⚙️ CÀI ĐẶT)
+2. Tìm slider "🔊 Âm Lượng"
+3. Kéo sang trái/phải để điều chỉnh
+4. % hiện tại được hiển thị bên cạnh
+
+### Presets
+1. Mở Settings
+2. Chọn "⚡ Chế Độ Bắn"
+3. Chọn một trong 4 modes
+4. Tự động lưu & áp dụng ngay
+
+### Loại Pháo Hoa
+1. Mở Settings
+2. Chọn "Loại Pháo Hoa"
+3. Tìm các loại mới (Dragon, Rainbow, etc.)
+4. Xem chi tiết bằng cách nhấn vào label
+
+## ⚡ Hiệu Suất & Tính Năng
+
+- ✅ 8 loại pháo hoa mới với hiệu ứng riêng
+- ✅ Volume slider mượt mà với live preview
+- ✅ 4 presets bắn với delay khác nhau
+- ✅ localStorage lưu all preferences
+- ✅ Responsive UI cho mobile & desktop
+- ✅ Help modals cho tất cả tính năng mới
+
+## 🔮 Gợi Ý Nâng Cấp Tương Lai
+
+1. Thêm color theme selector (Dark, Light, Neon)
+2. Thêm keyboard shortcuts display
+3. Thêm custom shell builder
+4. Thêm particle count display
+5. Thêm FPS counter
