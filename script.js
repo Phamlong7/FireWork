@@ -242,6 +242,8 @@ function toggleSound(toggle) {
 	} else {
 		store.setState({ soundEnabled: !store.state.soundEnabled });
 	}
+	// Also toggle background music
+	updateBackgroundMusic();
 }
 
 function toggleMenu(toggle) {
@@ -441,6 +443,49 @@ function renderApp(state) {
 
 store.subscribe(renderApp);
 
+// Update background music based on sound settings and pause state
+function updateBackgroundMusic() {
+	const audioElement = document.getElementById('background-audio');
+	const soundEnabled = store.state.soundEnabled;
+	const isPaused = store.state.paused;
+	
+	if (!audioElement) return;
+	
+	if (soundEnabled && !isPaused) {
+		// Only play if sound is enabled AND not paused
+		audioElement.volume = 0.3; // Set lower volume for background music
+		if (audioElement.paused) {
+			audioElement.play().catch(err => {
+				// Autoplay might be blocked
+				console.log('Background music autoplay blocked:', err);
+			});
+		}
+	} else {
+		// Pause music if sound disabled or app paused
+		if (!audioElement.paused) {
+			audioElement.pause();
+		}
+	}
+}
+
+// Initialize background audio
+function initBackgroundAudio() {
+	const audioElement = document.getElementById('background-audio');
+	if (!audioElement) return;
+	
+	audioElement.addEventListener('canplay', () => {
+		if (store.state.soundEnabled && !store.state.paused) {
+			audioElement.volume = 0.3;
+			audioElement.play().catch(err => {
+				console.log('Background music play blocked:', err);
+			});
+		}
+	});
+	
+	// Set initial volume
+	audioElement.volume = 0.3;
+}
+
 // Perform side effects on state changes
 function handleStateChange(state, prevState) {
 	const canPlaySound = canPlaySoundSelector(state);
@@ -452,6 +497,11 @@ function handleStateChange(state, prevState) {
 		} else {
 			soundManager.pauseAll();
 		}
+	}
+	
+	// Update background music on pause state change
+	if (state.paused !== prevState.paused || state.soundEnabled !== prevState.soundEnabled) {
+		updateBackgroundMusic();
 	}
 }
 
@@ -803,6 +853,9 @@ function init() {
 	// Remove loading state
 	document.querySelector('.loading-init').remove();
 	appNodes.stageContainer.classList.remove('remove');
+	
+	// Initialize background audio
+	initBackgroundAudio();
 	
 	// Populate dropdowns
 	function setOptionsForSelect(node, options) {
@@ -2301,23 +2354,6 @@ if (IS_HEADER) {
 		);
 	}, 0);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const audioElement = document.getElementById('background-audio');
-  let isPlaying = false;
-
-  function toggleMusic() {
-    if (isPlaying) {
-      audioElement.pause();
-    } else {
-      audioElement.play();
-    }
-    isPlaying = !isPlaying;
-  }
-
-  // Add event listener for the button or element that toggles music
-  document.querySelector('.sound-btn').addEventListener('click', toggleMusic);
-});
 
 
 

@@ -83,14 +83,21 @@ body {
   position: absolute;
   top: 0;
   width: 100%;
-  padding-bottom: 50px;
+  padding: 12px 20px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   transition: opacity 0.3s, visibility 0.3s;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 100%);
 }
 @media (min-width: 840px) {
   .controls {
     visibility: visible;
+    padding: 15px 25px;
+  }
+  .controls.hide {
+    opacity: 0.1;
   }
   .controls.hide:hover {
     opacity: 1;
@@ -103,8 +110,9 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.42);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(20, 20, 40, 0.6) 100%);
   transition: opacity 0.3s, visibility 0.3s;
+  backdrop-filter: blur(4px);
 }
 .menu__inner-wrap {
   display: flex;
@@ -120,10 +128,13 @@ body {
 }
 .menu__header {
   margin-top: auto;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   padding-top: 16px;
   font-size: 2em;
   text-transform: uppercase;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 3px;
 }
 .menu__subheader {
   margin-bottom: auto;
@@ -133,16 +144,25 @@ body {
 }
 .menu form {
   width: 100%;
-  max-width: 400px;
-  padding: 0 10px;
+  max-width: 450px;
+  padding: 0 20px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  max-height: 60vh;
 }
 .menu .form-option {
   display: flex;
   align-items: center;
-  margin: 16px 0;
-  transition: opacity 0.3s;
+  margin: 18px 0;
+  transition: all 0.3s;
+  padding: 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.menu .form-option:hover {
+  background: rgba(0, 255, 255, 0.1);
+  padding-left: 15px;
+  transition: all 0.2s;
 }
 .menu .form-option label {
   display: block;
@@ -154,20 +174,97 @@ body {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+}
+.menu .form-option label:hover {
+  color: #00ffff;
 }
 .menu .form-option--select select {
   display: block;
   width: 50%;
-  height: 30px;
+  height: 35px;
+  padding: 6px 10px;
   font-size: 1rem;
   font-family: "Russo One", arial, sans-serif;
-  color: rgba(255, 255, 255, 0.5);
+  color: #00ffff;
   letter-spacing: 0.06em;
-  background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 20, 40, 0.8);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.menu .form-option--select select:hover {
+  border-color: rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+.menu .form-option--select select:focus {
+  border-color: #00ffff;
+  outline: none;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
 }
 .menu .form-option--select select option {
-  background-color: black;
+  background-color: #001a33;
+  color: #00ffff;
+  padding: 8px;
+}
+.menu .form-option--range input[type="range"] {
+  width: 50%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.5));
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.menu .form-option--range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00ffff, #0099ff);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+.menu .form-option--range input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+.menu .form-option--range input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00ffff, #0099ff);
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+.menu .form-option--range input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+.menu .form-option--range input[type="range"]:hover {
+  background: linear-gradient(to right, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.7));
+}
+.form-option-value {
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  color: #00ffff;
+  font-weight: bold;
+  margin-left: 10px;
+  padding: 2px 8px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 3px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  font-size: 0.9em;
 }
 .menu .form-option--checkbox input {
   display: block;
@@ -175,8 +272,36 @@ body {
   height: 26px;
   margin: 0;
   opacity: 0.5;
+  cursor: pointer;
+  transition: all 0.3s;
+  accent-color: #00ffff;
+}
+.menu .form-option--checkbox input:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+.menu .form-option--checkbox input:checked {
+  opacity: 1;
 }
 @media (max-width: 840px) {
+  .menu form {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  .menu .form-option {
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .menu .form-option label {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 8px;
+    padding-right: 0;
+  }
+  .menu .form-option--select select,
+  .menu .form-option--checkbox input {
+    width: 100%;
+  }
   .menu .form-option select, .menu .form-option input {
     outline: none;
   }
@@ -186,6 +311,11 @@ body {
   position: absolute;
   top: 0;
   right: 0;
+  background: rgba(255, 0, 0, 0.1);
+}
+.close-menu-btn:hover {
+  background: rgba(255, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
 }
 
 .btn {
@@ -198,7 +328,15 @@ body {
       -ms-user-select: none;
           user-select: none;
   cursor: default;
-  transition: opacity 0.3s;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 0.05);
+  justify-content: center;
+  align-items: center;
+}
+.btn:hover {
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 .btn--bright {
   opacity: 0.5;
@@ -206,14 +344,20 @@ body {
 @media (min-width: 840px) {
   .btn:hover {
     opacity: 0.32;
+    transform: scale(1.1);
   }
   .btn--bright:hover {
     opacity: 0.75;
+    transform: scale(1.15);
   }
 }
 .btn svg {
   display: block;
   margin: auto;
+  filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.5));
+}
+.btn:hover svg {
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
 }
 
 .credits {
@@ -264,13 +408,15 @@ body {
   max-height: calc(100vh - 100px);
   margin: 10px;
   padding: 20px;
-  border-radius: 0.3em;
-  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0, 20, 40, 0.95) 0%, rgba(0, 40, 80, 0.95) 100%);
+  border: 2px solid rgba(0, 255, 255, 0.3);
   opacity: 0;
   transform: scale(0.9, 0.9);
   transition-property: opacity, transform;
   transition-timing-function: ease-in;
   transition-duration: 0.25s;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
 }
 @media (min-width: 840px) {
   .help-modal__dialog {
@@ -282,35 +428,44 @@ body {
   font-size: 1.75em;
   text-transform: uppercase;
   text-align: center;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 2px;
 }
 .help-modal__body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   margin: 1em 0;
   padding: 1em 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(0, 255, 255, 0.25);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.25);
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
 }
 .help-modal__close-btn {
   flex-shrink: 0;
   outline: none;
   border: none;
-  border-radius: 2px;
-  padding: 0.25em 0.75em;
+  border-radius: 4px;
+  padding: 0.5em 1em;
   margin-top: 0.36em;
   font-family: "Russo One", arial, sans-serif;
   font-size: 1em;
-  color: rgba(255, 255, 255, 0.5);
+  color: #00ffff;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background-color: rgba(255, 255, 255, 0.25);
-  transition: color 0.3s, background-color 0.3s;
+  background-color: rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  transition: all 0.3s;
+  cursor: pointer;
+  font-weight: 600;
 }
 .help-modal__close-btn:hover, .help-modal__close-btn:active, .help-modal__close-btn:focus {
   color: #FFF;
-  background-color: #09F;
+  background-color: #00ffff;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+  transform: scale(1.05);
 }
 .help-modal.active {
   visibility: visible;
